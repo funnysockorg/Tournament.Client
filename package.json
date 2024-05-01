@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "vite:watch": "vite",
+    "vite:build": "vite build",
+    "tests:vite:watch": "npm run vite:watch -- --config vite.tests.config.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "vite": "^4.5.2"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

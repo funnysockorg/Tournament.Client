@@ -1,0 +1,72 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Deploy",
+      "type": "shell",
+      "command": "build",
+      "args": [
+        "-t",
+        "MainDeploy"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "build",
+      "args": [
+        "-t",
+        "Clean"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "DotnetBuild",
+      "type": "shell",
+      "command": "build",
+      "args": [
+        "-t",
+        "DotnetBuild"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "MainWebWatch",
+      "type": "shell",
+      "command": "build",
+      "args": [
+        "-t",
+        "MainWebWatch"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "TestsDotnetRun",
+      "type": "shell",
+      "command": "build",
+      "args": [
+        "-t",
+        "TestsDotnetRun"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "TestsWebWatch",
+      "type": "shell",
+      "command": "build",
+      "args": [
+        "-t",
+        "TestsWebWatch"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+  ]
+}

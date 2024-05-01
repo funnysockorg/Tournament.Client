@@ -1,0 +1,27 @@
+group Main
+    strategy: min
+    source https://api.nuget.org/v3/index.json
+    framework: net6.0
+    storage:none
+
+    nuget FSharp.Core >= 6.0.7 lowest_matching: true
+    nuget Fable.Elmish
+    nuget Fable.Elmish.HMR
+    nuget Feliz
+
+    source https://gitlab.com/api/v4/projects/28574921/packages/nuget/index.json
+    nuget FSharpMyExt >= 2.0.0-prerelease.8 lowest_matching: true
+
+group Tests
+    strategy: min
+    source https://api.nuget.org/v3/index.json
+    framework: net6.0
+    storage:none
+
+    nuget FSharp.Core >= 6.0.7 lowest_matching: true
+
+    nuget Expecto
+    nuget Fable.Mocha
+
+    source https://gitlab.com/api/v4/projects/28574921/packages/nuget/index.json
+    nuget FSharpMyExt >= 2.0.0-prerelease.8 lowest_matching: true
