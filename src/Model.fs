@@ -3,9 +3,10 @@ module Tournament.Client.Model
 let rec qsort (xs: _ list) =
     match xs with
     | x::xs ->
+        let lowers, greaters = List.partition (fun y -> y < x) xs
         [
-            yield! List.filter (fun y -> y < x) xs |> qsort
+            yield! qsort lowers
             yield x
-            yield! List.filter (fun y -> y > x) xs |> qsort
+            yield! qsort greaters
         ]
     | [] -> []
