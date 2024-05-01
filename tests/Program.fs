@@ -8,6 +8,7 @@ open Expecto
 #if FABLE_COMPILER
 let all =
     testList "All" [
+        Tournament.Client.Model.Tests.``Tournament.Client.Model.qsort``
     ]
 #endif
 
