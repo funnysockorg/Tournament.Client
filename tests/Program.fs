@@ -9,6 +9,7 @@ open Expecto
 let all =
     testList "All" [
         Tournament.Client.Model.Tests.``Tournament.Client.Model.qsort``
+        Tournament.Client.Model.Tests.``Tournament.Client.Model.mergeSort``
     ]
 #endif
 
