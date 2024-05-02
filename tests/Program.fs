@@ -10,6 +10,8 @@ let all =
     testList "All" [
         Tournament.Client.Model.Tests.``Tournament.Client.Model.qsort``
         Tournament.Client.Model.Tests.``Tournament.Client.Model.mergeSort``
+        Tournament.Client.Model.Tests.``MergeSort.joinTwoSortedLists``
+        Tournament.Client.Model.Tests.``MergeSort.joinSortedLists``
     ]
 #endif
 

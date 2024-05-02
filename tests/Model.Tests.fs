@@ -37,5 +37,42 @@ let ``Tournament.Client.Model.qsort`` =
 #endif
 let ``Tournament.Client.Model.mergeSort`` =
     testList "Tournament.Client.Model.mergeSort" [
-        yield! createTests mergeSort
+        yield! createTests MergeSort.start
+    ]
+
+#if !FABLE_COMPILER
+[<Tests>]
+#endif
+let ``MergeSort.joinTwoSortedLists`` =
+    testList "MergeSort.joinTwoSortedLists" [
+        let isGreaterThan x y =
+            x > y
+        let create (sorted1, sorted2) exp =
+            testCase (sprintf "%A, %A -> %A" sorted1 sorted2 exp) <| fun () ->
+                Expect.equal
+                    (MergeSort.joinTwoSortedLists isGreaterThan sorted1 sorted2)
+                    exp
+                    ""
+        create ([], [2; 20]) [2; 20]
+        create ([2; 20], []) [2; 20]
+        create ([3; 10], [2; 20]) [2; 3; 10; 20]
+        create ([3; 10], [2; 20; 30]) [2; 3; 10; 20; 30]
+        create ([2; 20; 30], [3; 10]) [2; 3; 10; 20; 30]
+    ]
+
+#if !FABLE_COMPILER
+[<Tests>]
+#endif
+let ``MergeSort.joinSortedLists`` =
+    testList "MergeSort.joinSortedLists" [
+        let isGreaterThan x y =
+            x > y
+        let create xss exp =
+            testCase (sprintf "%A -> %A" xss exp) <| fun () ->
+                Expect.equal
+                    (MergeSort.joinSortedLists isGreaterThan xss)
+                    exp
+                    ""
+        create [[3; 10]; [2; 20]; [-10; 1]; [5]] [[2; 3; 10; 20]; [-10; 1; 5]]
+        create [[2; 3; 10; 20]; [-10; 1; 5]] [[-10; 1; 2; 3; 5; 10; 20]]
     ]
