@@ -1,18 +1,44 @@
 module Tournament.Client.Model
 
 module MergeSort =
-    let joinTwoSortedLists isGreaterThan (sorted1: 'a list) (sorted2: 'a list) : 'a list =
-        let rec loop acc = function
-            | x::xs, y::ys ->
-                if isGreaterThan x y then
-                    loop (y::acc) (x::xs, ys)
-                else
-                    loop (x::acc) (xs, y::ys)
-            | [], ys ->
-                List.fold (fun st y -> y::st) acc ys
-            | xs, [] ->
-                List.fold (fun st x -> x::st) acc xs
-        loop [] (sorted1, sorted2) |> List.rev
+    type Func<'Args, 'Result, 'Next> = 'Args * ((unit -> 'Result) -> 'Next)
+
+    [<RequireQualifiedAccess>]
+    type JoinTwoSortedLists<'a> =
+        | IsGreaterThan of Func<('a * 'a), bool, JoinTwoSortedLists<'a>>
+        | Result of 'a list
+    module JoinTwoSortedLists =
+        let start (sorted1: 'a list) (sorted2: 'a list) =
+            let rec loop acc = function
+                | x::xs, y::ys ->
+                    JoinTwoSortedLists.IsGreaterThan ((x, y), fun isGreaterThan ->
+                        if isGreaterThan () then
+                            loop (y::acc) (x::xs, ys)
+                        else
+                            loop (x::acc) (xs, y::ys)
+                    )
+                | [], ys ->
+                    JoinTwoSortedLists.Result (
+                        List.fold (fun st y -> y::st) acc ys
+                        |> List.rev
+                    )
+                | xs, [] ->
+                    JoinTwoSortedLists.Result (
+                        List.fold (fun st x -> x::st) acc xs
+                        |> List.rev
+                    )
+            loop [] (sorted1, sorted2)
+
+    let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
+        let rec interp = function
+            | JoinTwoSortedLists.IsGreaterThan ((x, y), getIsGreaterThan) ->
+                getIsGreaterThan (fun () ->
+                    isGreaterThan x y
+                )
+                |> interp
+            | JoinTwoSortedLists.Result result ->
+                result
+        interp (JoinTwoSortedLists.start sorted1 sorted2)
 
     let joinSortedLists isGreaterThan (xs: 'a list list) =
         // xs
