@@ -47,7 +47,7 @@ let ``MergeSort.joinTwoSortedLists`` =
     testList "MergeSort.joinTwoSortedLists" [
         let isGreaterThan x y =
             x > y
-        let create (sorted1, sorted2) exp =
+        let inline create (sorted1, sorted2) exp =
             testCase (sprintf "%A, %A -> %A" sorted1 sorted2 exp) <| fun () ->
                 Expect.equal
                     (MergeSort.joinTwoSortedLists isGreaterThan sorted1 sorted2)
@@ -67,7 +67,7 @@ let ``MergeSort.joinSortedLists`` =
     testList "MergeSort.joinSortedLists" [
         let isGreaterThan x y =
             x > y
-        let create xss exp =
+        let inline create xss exp =
             testCase (sprintf "%A -> %A" xss exp) <| fun () ->
                 Expect.equal
                     (MergeSort.joinSortedLists isGreaterThan xss)
