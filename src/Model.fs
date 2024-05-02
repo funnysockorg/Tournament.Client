@@ -66,6 +66,52 @@ module MergeSort =
                 TwoLists = sorted1, sorted2
             }
 
+    module JoinSortedLists =
+        type 'a Loop =
+            {
+                Xss: 'a list list
+                Acc: 'a list list
+            }
+
+        [<RequireQualifiedAccess>]
+        type Main<'a> =
+            | JoinTwoSortedListsReq of ('a list * 'a list) * 'a Loop
+            | Loop of Loop<'a>
+            | Result of 'a list list
+
+        module Loop =
+            let exec { Acc = acc; Xss = xss } =
+                match xss with
+                | xs::ys::xss ->
+                    Main.JoinTwoSortedListsReq (
+                        (xs, ys),
+                        {
+                            Acc = acc
+                            Xss = xss
+                        }
+                    )
+                | [xs] ->
+                    Main.Result (
+                        List.rev (xs::acc)
+                    )
+                | [] ->
+                    Main.Result (
+                        List.rev acc
+                    )
+
+        module JoinTwoSortedListsReq =
+            let exec zs { Acc = acc; Xss = xss } =
+                Main.Loop {
+                    Acc = zs::acc
+                    Xss = xss
+                }
+
+        let start (xss: 'a list list) =
+            Loop.exec {
+                Acc = []
+                Xss = xss
+            }
+
     let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
         let rec interp = function
             | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
@@ -79,24 +125,21 @@ module MergeSort =
                 result
         interp (JoinTwoSortedLists.start sorted1 sorted2)
 
-    let joinSortedLists isGreaterThan (xs: 'a list list) =
-        // xs
-        // |> List.chunkBySize 2
-        // |> List.map (function
-        //     | [xs; ys] ->
-        //         joinTwoSortedLists isGreaterThan xs ys
-        //     | [xs] -> xs
-        //     | [] -> []
-        //     | xs -> failwithf "%A length is greater than 2!" xs
-        // )
-        let rec loop acc = function
-            | xs::ys::xss ->
-                let ys =
-                    joinTwoSortedLists isGreaterThan xs ys
-                loop (ys::acc) xss
-            | [xs] -> xs::acc
-            | [] -> acc
-        loop [] xs |> List.rev
+    let joinSortedLists isGreaterThan xss =
+        let rec interp = function
+            | JoinSortedLists.Main.Loop loop ->
+                JoinSortedLists.Loop.exec loop
+                |> interp
+            | JoinSortedLists.Main.JoinTwoSortedListsReq ((xs, ys), data) ->
+                data
+                |> JoinSortedLists.JoinTwoSortedListsReq.exec
+                    (joinTwoSortedLists isGreaterThan xs ys)
+                |> interp
+            | JoinSortedLists.Main.Result xss ->
+                xss
+        xss
+        |> JoinSortedLists.start
+        |> interp
 
     let start (xs: 'a list) =
         let isGreaterThan x y =
