@@ -75,7 +75,7 @@ module MergeSort =
 
         [<RequireQualifiedAccess>]
         type Main<'a> =
-            | JoinTwoSortedListsReq of ('a list * 'a list) * 'a Loop
+            | JoinTwoSortedListsReq of JoinTwoSortedLists.Main<'a> * 'a Loop
             | Loop of Loop<'a>
             | Result of 'a list list
 
@@ -84,7 +84,7 @@ module MergeSort =
                 match xss with
                 | xs::ys::xss ->
                     Main.JoinTwoSortedListsReq (
-                        (xs, ys),
+                        JoinTwoSortedLists.start xs ys,
                         {
                             Acc = acc
                             Xss = xss
@@ -112,7 +112,7 @@ module MergeSort =
                 Xss = xss
             }
 
-    let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
+    let joinTwoSortedListsInterp isGreaterThan cmd =
         let rec interp = function
             | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
                 data
@@ -123,17 +123,25 @@ module MergeSort =
                 |> interp
             | JoinTwoSortedLists.Main.Result result ->
                 result
-        interp (JoinTwoSortedLists.start sorted1 sorted2)
+        interp cmd
+
+    let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
+        joinTwoSortedListsInterp
+            isGreaterThan
+            (JoinTwoSortedLists.start sorted1 sorted2)
 
     let joinSortedLists isGreaterThan xss =
         let rec interp = function
             | JoinSortedLists.Main.Loop loop ->
                 JoinSortedLists.Loop.exec loop
                 |> interp
-            | JoinSortedLists.Main.JoinTwoSortedListsReq ((xs, ys), data) ->
+            | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
+                let result =
+                    joinTwoSortedListsInterp
+                        isGreaterThan
+                        joinTwoSortedListsCmd
                 data
-                |> JoinSortedLists.JoinTwoSortedListsReq.exec
-                    (joinTwoSortedLists isGreaterThan xs ys)
+                |> JoinSortedLists.JoinTwoSortedListsReq.exec result
                 |> interp
             | JoinSortedLists.Main.Result xss ->
                 xss
