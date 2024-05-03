@@ -112,6 +112,25 @@ module MergeSort =
                 Xss = xss
             }
 
+    module Start =
+        [<RequireQualifiedAccess>]
+        type Main<'a> =
+            | JoinSortedLists of JoinSortedLists.Main<'a>
+            | Result of 'a list
+
+        let loop = function
+            | [xs] ->
+                Main.Result xs
+            | [] ->
+                Main.Result []
+            | xss ->
+                Main.JoinSortedLists (
+                    JoinSortedLists.start xss
+                )
+
+        let start (xs: 'a list) =
+            loop (List.map (fun x -> [x]) xs)
+
     let joinTwoSortedListsInterp isGreaterThan cmd =
         let rec interp = function
             | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
@@ -130,7 +149,7 @@ module MergeSort =
             isGreaterThan
             (JoinTwoSortedLists.start sorted1 sorted2)
 
-    let joinSortedLists isGreaterThan xss =
+    let joinSortedListsInterp isGreaterThan xss =
         let rec interp = function
             | JoinSortedLists.Main.Loop loop ->
                 JoinSortedLists.Loop.exec loop
@@ -145,20 +164,29 @@ module MergeSort =
                 |> interp
             | JoinSortedLists.Main.Result xss ->
                 xss
+        interp xss
+
+    let joinSortedLists isGreaterThan xss =
         xss
         |> JoinSortedLists.start
-        |> interp
+        |> joinSortedListsInterp isGreaterThan
+
+    let startInterp isGreaterThan x =
+        let rec interp = function
+            | Start.Main.JoinSortedLists xss ->
+                joinSortedListsInterp isGreaterThan xss
+                |> Start.loop
+                |> interp
+            | Start.Main.Result sortedList ->
+                sortedList
+        interp x
 
     let start (xs: 'a list) =
         let isGreaterThan x y =
             x > y
-
-        let rec loop = function
-            | [xs] -> xs
-            | [] -> []
-            | xss -> loop (joinSortedLists isGreaterThan xss)
-
-        loop (List.map (fun x -> [x]) xs)
+        xs
+        |> Start.start
+        |> startInterp isGreaterThan
 
 let rec qsort (xs: _ list) =
     match xs with
