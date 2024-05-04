@@ -10,7 +10,7 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f7f7f7;
+      background-color: #f8f9fa;
     }
 
     .container {
@@ -26,23 +26,29 @@
     .candidates {
       display: flex;
       justify-content: center;
-      margin-top: 30px;
+      flex-wrap: wrap;
+      gap: 40px;
+      margin: 0;
+      padding: 0;
     }
 
     .candidate {
-      margin: 0 20px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      background-color: #333;
+      line-height: 0;
     }
 
     .candidate img {
       width: 200px;
-      height: auto;
-      border: 3px solid transparent;
-      cursor: pointer;
-      transition: border-color 0.3s ease;
+      transition: transform 0.3s ease;
     }
 
-    .candidate img:hover {
-      border-color: #007bff;
+    .candidate:hover img {
+      transform: scale(1.1);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -51,10 +57,10 @@
   <div class="container">
     <h1>Choose Your Candidate</h1>
     <div class="candidates">
-      <div class="candidate" id="candidate1">
+      <div class="candidate">
         <img src="images/candidate1.jpg" alt="Candidate 1">
       </div>
-      <div class="candidate" id="candidate2">
+      <div class="candidate">
         <img src="images/candidate2.jpg" alt="Candidate 2">
       </div>
     </div>
