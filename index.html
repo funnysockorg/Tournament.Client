@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Your Candidate</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .candidates {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .candidate {
+      margin: 0 20px;
+    }
+
+    .candidate img {
+      width: 200px;
+      height: auto;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .candidate img:hover {
+      border-color: #007bff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Choose Your Candidate</h1>
+    <div class="candidates">
+      <div class="candidate" id="candidate1">
+        <img src="images/candidate1.jpg" alt="Candidate 1">
+      </div>
+      <div class="candidate" id="candidate2">
+        <img src="images/candidate2.jpg" alt="Candidate 2">
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
