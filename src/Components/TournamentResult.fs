@@ -25,19 +25,6 @@ let init participants =
 let update (msg: Msg) (state: State) =
     match msg with
     | Msg.Submit ->
-        // let sortState =
-        //     MergeSortInterp.choice choice state.SortState
-        // let state =
-        //     { state with
-        //         SortState =
-        //             sortState
-        //     }
-        // let cmd =
-        //     match MergeSortInterp.getResult sortState with
-        //     | Some result ->
-        //         Cmd.ofMsg (Msg.Result result)
-        //     | None ->
-        //         Cmd.none
         state, Cmd.none
 
 let view (state: State) (dispatch: Msg -> unit) =
