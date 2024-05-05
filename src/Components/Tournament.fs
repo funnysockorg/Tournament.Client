@@ -33,50 +33,6 @@ let init participants =
 module MergeSortInterp =
     open MergeSort
 
-    let joinTwoSortedListsInterp cmd =
-        let rec interp = function
-            | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
-                JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data)
-                |> Choice1Of2
-            | JoinTwoSortedLists.Main.Loop loopArgs ->
-                JoinTwoSortedLists.Loop.exec loopArgs
-                |> interp
-            | JoinTwoSortedLists.Main.Result result ->
-                Choice2Of2 result
-        interp cmd
-
-    let joinSortedListsInterp xss =
-        let rec interp = function
-            | JoinSortedLists.Main.Loop loop ->
-                JoinSortedLists.Loop.exec loop
-                |> interp
-            | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
-                match joinTwoSortedListsInterp joinTwoSortedListsCmd with
-                | Choice1Of2 joinTwoSortedListsCmd ->
-                    JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data)
-                    |> Choice1Of2
-                | Choice2Of2 result ->
-                    data
-                    |> JoinSortedLists.JoinTwoSortedListsReq.exec result
-                    |> interp
-            | JoinSortedLists.Main.Result xss ->
-                Choice2Of2 xss
-        interp xss
-
-    let startInterp x =
-        let rec interp = function
-            | Start.Main.JoinSortedLists xss ->
-                match joinSortedListsInterp xss with
-                | Choice1Of2 msg ->
-                    Start.Main.JoinSortedLists msg
-                | Choice2Of2 result ->
-                    result
-                    |> Start.loop
-                    |> interp
-            | Start.Main.Result sortedList ->
-                Start.Main.Result sortedList
-        interp x
-
     let choice choiceArg state =
         match state with
         | Start.Main.JoinSortedLists x ->

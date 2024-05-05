@@ -157,62 +157,116 @@ module MergeSort =
         let start (xs: 'a list) =
             loop (List.map (fun x -> [x]) xs)
 
-    let joinTwoSortedListsInterp isGreaterThan cmd =
+    let joinTwoSortedListsInterp cmd =
         let rec interp = function
             | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
-                data
-                |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
-                |> interp
+                JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data)
+                |> Choice1Of2
             | JoinTwoSortedLists.Main.Loop loopArgs ->
                 JoinTwoSortedLists.Loop.exec loopArgs
                 |> interp
             | JoinTwoSortedLists.Main.Result result ->
-                result
+                Choice2Of2 result
         interp cmd
 
     let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
-        joinTwoSortedListsInterp
-            isGreaterThan
-            (JoinTwoSortedLists.start sorted1 sorted2)
+        let rec loop = function
+            | Choice1Of2 x ->
+                match x with
+                | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
+                    data
+                    |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
+                    |> joinTwoSortedListsInterp
+                    |> loop
+                | x ->
+                    failwithf "%A Not Implemented" x
+            | Choice2Of2 result ->
+                result
+        JoinTwoSortedLists.start sorted1 sorted2
+        |> joinTwoSortedListsInterp
+        |> loop
 
-    let joinSortedListsInterp isGreaterThan xss =
+    let joinSortedListsInterp xss =
         let rec interp = function
             | JoinSortedLists.Main.Loop loop ->
                 JoinSortedLists.Loop.exec loop
                 |> interp
             | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
-                let result =
-                    joinTwoSortedListsInterp
-                        isGreaterThan
-                        joinTwoSortedListsCmd
-                data
-                |> JoinSortedLists.JoinTwoSortedListsReq.exec result
-                |> interp
+                match joinTwoSortedListsInterp joinTwoSortedListsCmd with
+                | Choice1Of2 joinTwoSortedListsCmd ->
+                    JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data)
+                    |> Choice1Of2
+                | Choice2Of2 result ->
+                    data
+                    |> JoinSortedLists.JoinTwoSortedListsReq.exec result
+                    |> interp
             | JoinSortedLists.Main.Result xss ->
-                xss
+                Choice2Of2 xss
         interp xss
 
     let joinSortedLists isGreaterThan xss =
-        xss
-        |> JoinSortedLists.start
-        |> joinSortedListsInterp isGreaterThan
+        let rec loop = function
+            | Choice1Of2 x ->
+                match x with
+                | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
+                    match joinTwoSortedListsCmd with
+                    | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data') ->
+                        let result =
+                            data'
+                            |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
+                        JoinSortedLists.Main.JoinTwoSortedListsReq (result, data)
+                        |> joinSortedListsInterp
+                        |> loop
+                    | x ->
+                        failwithf "%A Not Implemented" x
+                | x ->
+                    failwithf "%A Not Implemented" x
+            | Choice2Of2 result ->
+                result
+        JoinSortedLists.start xss
+        |> joinSortedListsInterp
+        |> loop
 
-    let startInterp isGreaterThan x =
+    let startInterp x =
         let rec interp = function
             | Start.Main.JoinSortedLists xss ->
-                joinSortedListsInterp isGreaterThan xss
-                |> Start.loop
-                |> interp
+                match joinSortedListsInterp xss with
+                | Choice1Of2 msg ->
+                    Start.Main.JoinSortedLists msg
+                | Choice2Of2 result ->
+                    result
+                    |> Start.loop
+                    |> interp
             | Start.Main.Result sortedList ->
-                sortedList
+                Start.Main.Result sortedList
         interp x
 
     let start (xs: 'a list) =
         let isGreaterThan x y =
             x > y
+        let rec loop = function
+            | Start.Main.JoinSortedLists x ->
+                match x with
+                | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
+                    match joinTwoSortedListsCmd with
+                    | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data') ->
+                        let result =
+                            data'
+                            |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
+                        JoinSortedLists.Main.JoinTwoSortedListsReq (result, data)
+                        |> Start.Main.JoinSortedLists
+                        |> startInterp
+                        |> loop
+                    | x ->
+                        failwithf "%A Not Implemented" x
+                | x ->
+                    failwithf "%A Not Implemented" x
+            | Start.Main.Result sortedList ->
+                sortedList
         xs
         |> Start.start
-        |> startInterp isGreaterThan
+        |> startInterp
+        |> loop
 
 let rec qsort (xs: _ list) =
     match xs with
