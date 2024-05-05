@@ -1,62 +1,117 @@
 module Index
-
 open Elmish
 open Feliz
 
-type Msg =
-    | Incr
-    | Decr
+open Tournament.Client.Model
+open Tournament.Client.Components
+
+[<RequireQualifiedAccess>]
+type Page =
+    | Home of Home.State
+    | Tournament of Tournament.State
+    | TournamentResult of TournamentResult.State
 
 type State =
     {
-        Counter: int
+        Page: Page
     }
 
-let init arg =
-    let state =
+module State =
+    let empty =
         {
-            Counter = 0
+            Page = Page.Home Home.State.empty
         }
-    state, Cmd.none
+
+[<RequireQualifiedAccess>]
+type Msg =
+    | HomeHandle of Home.Msg
+    | TournamentHandle of Tournament.Msg
+    | StartTournament
+    | StartTournamentResult of Participant list
+    | TournamentResultHandle of TournamentResult.Msg
+
+let init () =
+    State.empty, Cmd.none
 
 let update (msg: Msg) (state: State) =
     match msg with
-    | Incr ->
+    | Msg.HomeHandle homeMsg ->
+        match state.Page with
+        | Page.Home homeState ->
+            match homeMsg with
+            | Home.Msg.Start ->
+                state, Cmd.ofMsg Msg.StartTournament
+            | homeMsg ->
+                let homeState, homeCmd =
+                    Home.update homeMsg homeState
+                let state =
+                    { state with
+                        Page =
+                            Page.Home homeState
+                    }
+                state, homeCmd |> Cmd.map Msg.HomeHandle
+        | _ ->
+            state, Cmd.none
+    | Msg.TournamentHandle tournamentMsg ->
+        match state.Page with
+        | Page.Tournament tournamentState ->
+            match tournamentMsg with
+            | Tournament.Msg.Result r ->
+                state, Cmd.ofMsg (Msg.StartTournamentResult r)
+            | tournamentMsg ->
+                let tournamentState, tournamentCmd =
+                    Tournament.update tournamentMsg tournamentState
+                let state =
+                    { state with
+                        Page =
+                            Page.Tournament tournamentState
+                    }
+                state, tournamentCmd |> Cmd.map Msg.TournamentHandle
+        | _ ->
+            state, Cmd.none
+    | Msg.TournamentResultHandle tournamentResultMsg ->
+        match state.Page with
+        | Page.TournamentResult tournamentResultState ->
+            match tournamentResultMsg with
+            | TournamentResult.Msg.Submit ->
+                state, Cmd.none
+            // | tournamentResultMsg ->
+            //     let tournamentResultState, tournamentResultCmd =
+            //         TournamentResult.update tournamentResultMsg tournamentResultState
+            //     let state =
+            //         { state with
+            //             Page =
+            //                 Page.TournamentResult tournamentResultState
+            //         }
+            //     state, tournamentResultCmd |> Cmd.map Msg.TournamentResultHandle
+        | _ ->
+            state, Cmd.none
+    | Msg.StartTournament ->
+        let tournamentState, tournamentCmd =
+            Tournament.init mockParticipant
         let state =
             { state with
-                Counter = state.Counter + 1
+                Page = Page.Tournament tournamentState
             }
-        state, Cmd.none
-    | Decr ->
+        let cmd =
+            tournamentCmd |> Cmd.map Msg.TournamentHandle
+        state, cmd
+    | Msg.StartTournamentResult tournamentState ->
+        let tournamentState, tournamentCmd =
+            TournamentResult.init mockParticipant
         let state =
             { state with
-                Counter = state.Counter - 1
+                Page = Page.TournamentResult tournamentState
             }
-        state, Cmd.none
+        let cmd =
+            tournamentCmd |> Cmd.map Msg.TournamentResultHandle
+        state, cmd
 
 let view (state: State) (dispatch: Msg -> unit) =
-    Html.div [
-        Html.div [
-            prop.text (sprintf "Counter is %d" state.Counter)
-        ]
-        Html.div [
-            Html.div [
-                Html.button [
-                    prop.onClick (fun _ -> dispatch Decr)
-                    prop.children [
-                        Html.i [
-                            prop.text "-"
-                        ]
-                    ]
-                ]
-                Html.button [
-                    prop.onClick (fun _ -> dispatch Incr)
-                    prop.children [
-                        Html.i [
-                            prop.text "+"
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ]
+    match state.Page with
+    | Page.Home homeState ->
+        Home.view homeState (Msg.HomeHandle >> dispatch)
+    | Page.Tournament tournamentState ->
+        Tournament.view tournamentState (Msg.TournamentHandle >> dispatch)
+    | Page.TournamentResult tournamentResultState ->
+        TournamentResult.view tournamentResultState (Msg.TournamentResultHandle >> dispatch)

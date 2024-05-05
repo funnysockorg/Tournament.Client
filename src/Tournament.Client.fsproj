@@ -6,6 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Model.fs" />
+    <Compile Include="Components/Home.fs" />
+    <Compile Include="Components/Tournament.fs" />
+    <Compile Include="Components/TournamentResult.fs" />
     <Compile Include="Index.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
