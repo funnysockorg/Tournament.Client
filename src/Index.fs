@@ -98,7 +98,7 @@ let update (msg: Msg) (state: State) =
         state, cmd
     | Msg.StartTournamentResult tournamentState ->
         let tournamentState, tournamentCmd =
-            TournamentResult.init mockParticipant
+            TournamentResult.init tournamentState
         let state =
             { state with
                 Page = Page.TournamentResult tournamentState
