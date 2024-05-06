@@ -27,8 +27,6 @@ let mockParticipant : Participant list =
     )
 
 module MergeSort =
-    type Func<'Args, 'Result, 'Next> = 'Args * ((unit -> 'Result) -> 'Next)
-
     module JoinTwoSortedLists =
         type Loop<'a> =
             {
