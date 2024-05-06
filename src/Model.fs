@@ -268,6 +268,55 @@ module MergeSort =
         |> startInterp
         |> loop
 
+    [<RequireQualifiedAccess>]
+    type Choice =
+        | Left
+        | Right
+
+    let choice choiceArg state =
+        match state with
+        | Start.Main.JoinSortedLists x ->
+            match x with
+            | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, loop) ->
+                match joinTwoSortedListsCmd with
+                | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), cmd) ->
+                    let isGreaterThan =
+                        match choiceArg with
+                        | Choice.Left -> true
+                        | Choice.Right -> false
+                    let joinTwoSortedListsCmd =
+                        cmd
+                        |> JoinTwoSortedLists.IsGreaterThan.exec isGreaterThan
+                    JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, loop)
+                    |> Start.Main.JoinSortedLists
+                    |> startInterp
+                | _ ->
+                    startInterp state
+            | _ ->
+                startInterp state
+        | _ ->
+            startInterp state
+
+    let getCurrentCandidates = function
+        | Start.Main.JoinSortedLists x ->
+            match x with
+            | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, _) ->
+                match joinTwoSortedListsCmd with
+                | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), _) ->
+                    Some (x, y)
+                | _ ->
+                    None
+            | _ ->
+                None
+        | _ ->
+            None
+
+    let getResult = function
+        | Start.Main.Result xs ->
+            Some xs
+        | _ ->
+            None
+
 let rec qsort (xs: _ list) =
     match xs with
     | x::xs ->

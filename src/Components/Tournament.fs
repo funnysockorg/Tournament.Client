@@ -18,77 +18,25 @@ module State =
         }
 
 [<RequireQualifiedAccess>]
-type Choice =
-    | Left
-    | Right
-
-[<RequireQualifiedAccess>]
 type Msg =
-    | Choice of Choice
+    | Choice of MergeSort.Choice
     | Result of Participant list
 
 let init participants =
     State.create participants, Cmd.none
 
-module MergeSortInterp =
-    open MergeSort
-
-    let choice choiceArg state =
-        match state with
-        | Start.Main.JoinSortedLists x ->
-            match x with
-            | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, loop) ->
-                match joinTwoSortedListsCmd with
-                | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), cmd) ->
-                    let isGreaterThan =
-                        match choiceArg with
-                        | Choice.Left -> true
-                        | Choice.Right -> false
-                    let joinTwoSortedListsCmd =
-                        cmd
-                        |> JoinTwoSortedLists.IsGreaterThan.exec isGreaterThan
-                    JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, loop)
-                    |> Start.Main.JoinSortedLists
-                    |> startInterp
-                | _ ->
-                    startInterp state
-            | _ ->
-                startInterp state
-        | _ ->
-            startInterp state
-
-    let getCurrentCandidates = function
-        | Start.Main.JoinSortedLists x ->
-            match x with
-            | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, _) ->
-                match joinTwoSortedListsCmd with
-                | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), _) ->
-                    Some (x, y)
-                | _ ->
-                    None
-            | _ ->
-                None
-        | _ ->
-            None
-
-    let getResult = function
-        | Start.Main.Result xs ->
-            Some xs
-        | _ ->
-            None
-
 let update (msg: Msg) (state: State) =
     match msg with
     | Msg.Choice choice ->
         let sortState =
-            MergeSortInterp.choice choice state.SortState
+            MergeSort.choice choice state.SortState
         let state =
             { state with
                 SortState =
                     sortState
             }
         let cmd =
-            match MergeSortInterp.getResult sortState with
+            match MergeSort.getResult sortState with
             | Some result ->
                 Cmd.ofMsg (Msg.Result result)
             | None ->
@@ -98,7 +46,7 @@ let update (msg: Msg) (state: State) =
         state, Cmd.none
 
 let view (state: State) (dispatch: Msg -> unit) =
-    match MergeSortInterp.getCurrentCandidates state.SortState with
+    match MergeSort.getCurrentCandidates state.SortState with
     | Some (x, y) ->
         Html.div [
             Html.h1 [
@@ -106,11 +54,11 @@ let view (state: State) (dispatch: Msg -> unit) =
             ]
             Html.div [
                 Html.button [
-                    prop.onClick (fun _ -> dispatch (Msg.Choice Choice.Left))
+                    prop.onClick (fun _ -> dispatch (Msg.Choice MergeSort.Choice.Left))
                     prop.textf "%s" x.Name
                 ]
                 Html.button [
-                    prop.onClick (fun _ -> dispatch (Msg.Choice Choice.Right))
+                    prop.onClick (fun _ -> dispatch (Msg.Choice MergeSort.Choice.Right))
                     prop.textf "%s" y.Name
                 ]
             ]
