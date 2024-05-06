@@ -20,11 +20,12 @@ type Participant =
         Name: string
     }
 
-let mockParticipant : Participant list =
-    [ 10; 20; 1; 4; 5; 3 ]
-    |> List.map (fun n ->
-        { Name = sprintf "%d" n }
-    )
+module ParticipantsStorage =
+    let mocks : Participant list =
+        [ 10; 20; 1; 4; 5; 3 ]
+        |> List.map (fun n ->
+            { Name = sprintf "%d" n }
+        )
 
 module MergeSort =
     module JoinTwoSortedLists =
