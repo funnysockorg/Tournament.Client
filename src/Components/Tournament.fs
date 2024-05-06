@@ -14,7 +14,7 @@ module State =
     let create participants =
         {
             Participants = participants
-            SortState = MergeSort.Start.start participants
+            SortState = MergeSort.create participants
         }
 
 [<RequireQualifiedAccess>]

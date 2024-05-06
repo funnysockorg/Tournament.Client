@@ -204,6 +204,9 @@ module MergeSort =
         | Left
         | Right
 
+    let create xs =
+        Start.start xs
+
     let choice choiceArg state =
         match state with
         | Start.Main.JoinSortedLists x ->
