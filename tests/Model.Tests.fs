@@ -88,12 +88,35 @@ let ``MergeSort.joinTwoSortedLists`` =
 #endif
 let ``MergeSort.joinSortedLists`` =
     testList "MergeSort.joinSortedLists" [
+        let joinSortedLists isGreaterThan xss =
+            let rec loop = function
+                | Choice1Of2 x ->
+                    match x with
+                    | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
+                        match joinTwoSortedListsCmd with
+                        | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data') ->
+                            let result =
+                                data'
+                                |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
+                            JoinSortedLists.Main.JoinTwoSortedListsReq (result, data)
+                            |> joinSortedListsInterp
+                            |> loop
+                        | x ->
+                            failwithf "%A Not Implemented" x
+                    | x ->
+                        failwithf "%A Not Implemented" x
+                | Choice2Of2 result ->
+                    result
+            JoinSortedLists.start xss
+            |> joinSortedListsInterp
+            |> loop
+
         let isGreaterThan x y =
             x > y
         let inline create xss exp =
             testCase (sprintf "%A -> %A" xss exp) <| fun () ->
                 Expect.equal
-                    (MergeSort.joinSortedLists isGreaterThan xss)
+                    (joinSortedLists isGreaterThan xss)
                     exp
                     ""
         create [[3; 10]; [2; 20]; [-10; 1]; [5]] [[2; 3; 10; 20]; [-10; 1; 5]]
