@@ -1,4 +1,4 @@
-module Tournament.Client.Model
+namespace Tournament.Client.Model
 
 type User =
     {
