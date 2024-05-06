@@ -167,23 +167,6 @@ module MergeSort =
                 Choice2Of2 result
         interp cmd
 
-    let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
-        let rec loop = function
-            | Choice1Of2 x ->
-                match x with
-                | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
-                    data
-                    |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
-                    |> joinTwoSortedListsInterp
-                    |> loop
-                | x ->
-                    failwithf "%A Not Implemented" x
-            | Choice2Of2 result ->
-                result
-        JoinTwoSortedLists.start sorted1 sorted2
-        |> joinTwoSortedListsInterp
-        |> loop
-
     let joinSortedListsInterp xss =
         let rec interp = function
             | JoinSortedLists.Main.Loop loop ->

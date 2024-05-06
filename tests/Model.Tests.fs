@@ -5,6 +5,8 @@ open Fable.Mocha
 open Expecto
 #endif
 
+open Tournament.Client.Model.MergeSort
+
 let createTests isGreaterThan sort =
     [
         testCase "[10; 3; 2; 20; 1; -10] -> [-10; 1; 2; 3; 10; 20]" <| fun () ->
@@ -49,12 +51,29 @@ let ``Tournament.Client.Model.mergeSort`` =
 #endif
 let ``MergeSort.joinTwoSortedLists`` =
     testList "MergeSort.joinTwoSortedLists" [
+        let joinTwoSortedLists isGreaterThan sorted1 sorted2 =
+            let rec loop = function
+                | Choice1Of2 x ->
+                    match x with
+                    | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data) ->
+                        data
+                        |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
+                        |> joinTwoSortedListsInterp
+                        |> loop
+                    | x ->
+                        failwithf "%A Not Implemented" x
+                | Choice2Of2 result ->
+                    result
+            JoinTwoSortedLists.start sorted1 sorted2
+            |> joinTwoSortedListsInterp
+            |> loop
+
         let isGreaterThan x y =
             x > y
         let inline create (sorted1, sorted2) exp =
             testCase (sprintf "%A, %A -> %A" sorted1 sorted2 exp) <| fun () ->
                 Expect.equal
-                    (MergeSort.joinTwoSortedLists isGreaterThan sorted1 sorted2)
+                    (joinTwoSortedLists isGreaterThan sorted1 sorted2)
                     exp
                     ""
         create ([], [2; 20]) [2; 20]
