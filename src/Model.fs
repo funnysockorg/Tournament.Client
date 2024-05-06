@@ -251,15 +251,3 @@ module MergeSort =
             Some xs
         | _ ->
             None
-
-let rec qsort isGreaterThan (xs: _ list) =
-    let rec qsort = function
-        | x::xs ->
-            let lowers, greaters = List.partition (isGreaterThan x) xs
-            [
-                yield! qsort lowers
-                yield x
-                yield! qsort greaters
-            ]
-        | [] -> []
-    qsort xs

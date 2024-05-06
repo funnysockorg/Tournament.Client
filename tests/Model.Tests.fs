@@ -29,16 +29,6 @@ let createTests isGreaterThan sort =
 #if !FABLE_COMPILER
 [<Tests>]
 #endif
-let ``Tournament.Client.Model.qsort`` =
-    let isGreaterThan x y =
-        x > y
-    testList "Tournament.Client.Model.qsort" [
-        yield! createTests isGreaterThan qsort
-    ]
-
-#if !FABLE_COMPILER
-[<Tests>]
-#endif
 let ``Tournament.Client.Model.mergeSort`` =
     let start isGreaterThan (xs: 'a list) =
         let rec loop = function
