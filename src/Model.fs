@@ -241,9 +241,7 @@ module MergeSort =
                 Start.Main.Result sortedList
         interp x
 
-    let start (xs: 'a list) =
-        let isGreaterThan x y =
-            x > y
+    let start isGreaterThan (xs: 'a list) =
         let rec loop = function
             | Start.Main.JoinSortedLists x ->
                 match x with
@@ -317,13 +315,14 @@ module MergeSort =
         | _ ->
             None
 
-let rec qsort (xs: _ list) =
-    match xs with
-    | x::xs ->
-        let lowers, greaters = List.partition (fun y -> y < x) xs
-        [
-            yield! qsort lowers
-            yield x
-            yield! qsort greaters
-        ]
-    | [] -> []
+let rec qsort isGreaterThan (xs: _ list) =
+    let rec qsort = function
+        | x::xs ->
+            let lowers, greaters = List.partition (isGreaterThan x) xs
+            [
+                yield! qsort lowers
+                yield x
+                yield! qsort greaters
+            ]
+        | [] -> []
+    qsort xs
