@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Model/MergeSort.Tests.fs" />
     <Compile Include="Model.Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

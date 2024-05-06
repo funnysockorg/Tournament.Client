@@ -8,9 +8,9 @@ open Expecto
 #if FABLE_COMPILER
 let all =
     testList "All" [
-        Tournament.Client.Model.Tests.``Tournament.Client.Model.mergeSort``
-        Tournament.Client.Model.Tests.``MergeSort.joinTwoSortedLists``
-        Tournament.Client.Model.Tests.``MergeSort.joinSortedLists``
+        Tournament.Client.Model.MergeSort.Tests.start
+        Tournament.Client.Model.MergeSort.Tests.joinTwoSortedLists
+        Tournament.Client.Model.MergeSort.Tests.joinSortedLists
     ]
 #endif
 
