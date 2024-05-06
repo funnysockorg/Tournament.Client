@@ -199,31 +199,6 @@ module MergeSort =
                 Start.Main.Result sortedList
         interp x
 
-    let start isGreaterThan (xs: 'a list) =
-        let rec loop = function
-            | Start.Main.JoinSortedLists x ->
-                match x with
-                | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
-                    match joinTwoSortedListsCmd with
-                    | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data') ->
-                        let result =
-                            data'
-                            |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
-                        JoinSortedLists.Main.JoinTwoSortedListsReq (result, data)
-                        |> Start.Main.JoinSortedLists
-                        |> startInterp
-                        |> loop
-                    | x ->
-                        failwithf "%A Not Implemented" x
-                | x ->
-                    failwithf "%A Not Implemented" x
-            | Start.Main.Result sortedList ->
-                sortedList
-        xs
-        |> Start.start
-        |> startInterp
-        |> loop
-
     [<RequireQualifiedAccess>]
     type Choice =
         | Left

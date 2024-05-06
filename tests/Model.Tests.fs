@@ -40,10 +40,35 @@ let ``Tournament.Client.Model.qsort`` =
 [<Tests>]
 #endif
 let ``Tournament.Client.Model.mergeSort`` =
+    let start isGreaterThan (xs: 'a list) =
+        let rec loop = function
+            | Start.Main.JoinSortedLists x ->
+                match x with
+                | JoinSortedLists.Main.JoinTwoSortedListsReq (joinTwoSortedListsCmd, data) ->
+                    match joinTwoSortedListsCmd with
+                    | JoinTwoSortedLists.Main.IsGreaterThanReq ((x, y), data') ->
+                        let result =
+                            data'
+                            |> JoinTwoSortedLists.IsGreaterThan.exec (isGreaterThan x y)
+                        JoinSortedLists.Main.JoinTwoSortedListsReq (result, data)
+                        |> Start.Main.JoinSortedLists
+                        |> startInterp
+                        |> loop
+                    | x ->
+                        failwithf "%A Not Implemented" x
+                | x ->
+                    failwithf "%A Not Implemented" x
+            | Start.Main.Result sortedList ->
+                sortedList
+        xs
+        |> Start.start
+        |> startInterp
+        |> loop
+
     let isGreaterThan x y =
         x > y
     testList "Tournament.Client.Model.mergeSort" [
-        yield! createTests isGreaterThan MergeSort.start
+        yield! createTests isGreaterThan start
     ]
 
 #if !FABLE_COMPILER
