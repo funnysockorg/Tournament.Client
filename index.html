@@ -18,17 +18,37 @@
     }
 
     .container {
-      text-align: center;
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
       padding: 40px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .avatar {
+      width: 200px;
+      overflow: hidden;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     h1 {
       color: #4f4f4f;
-      margin-bottom: 30px;
+      margin: 0px;
       font-size: 28px;
+      text-align: center;
     }
 
     .start-button {
@@ -59,6 +79,9 @@
 <body>
   <div class="container">
     <h1>Выбор иконки для сервера<br/>«Весёлый&nbsp;носок»</h1>
+    <div class="avatar">
+      <img src="./images/avatar.svg" alt="avatar">
+    </div>
     <button class="start-button">Начать</button>
   </div>
 </body>
