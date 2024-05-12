@@ -45,6 +45,7 @@ let view (state: State) (dispatch: Msg -> unit) =
     | None ->
         Html.div [
             Html.h1 [
+                prop.classes [ "text-3xl"; "font-bold"; "underline" ]
                 prop.text "Welcome!"
             ]
             Html.div [

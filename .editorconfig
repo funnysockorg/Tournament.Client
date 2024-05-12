@@ -13,5 +13,5 @@ insert_final_newline = true
 [*.fs]
 indent_size = 4
 
-[*.{fsproj,json,html}]
+[*.{fsproj,json,html,css}]
 indent_size = 2

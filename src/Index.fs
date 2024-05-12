@@ -5,6 +5,8 @@ open Feliz
 open Tournament.Client.Model
 open Tournament.Client.Components
 
+Fable.Core.JsInterop.import "" "./index.css"
+
 [<RequireQualifiedAccess>]
 type Page =
     | Home of Home.State
