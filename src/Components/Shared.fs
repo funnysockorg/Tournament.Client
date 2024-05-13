@@ -163,3 +163,25 @@ let button (text: string) onClick =
         prop.text text
         prop.onClick onClick
     ]
+
+let h1 (children: ReactElement list) =
+    Html.h1 [
+        prop.classes [
+            "text-3xl"
+            "text-black"
+            "text-opacity-70"
+            "text-center"
+        ]
+        prop.children children
+    ]
+
+let p (children: ReactElement list) =
+    Html.div [
+        prop.classes [
+            "text-xl"
+            "text-black"
+            "text-opacity-70"
+            "text-center"
+        ]
+        prop.children children
+    ]

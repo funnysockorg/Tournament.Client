@@ -7,6 +7,7 @@ open Tournament.Client.Components.Shared
 
 [<RequireQualifiedAccess>]
 type Msg =
+    | ToLoginStep
     | Login
     | LoginResult of User
     | Start
@@ -14,12 +15,14 @@ type Msg =
 type State =
     {
         User: User option
+        IsPreLoginPage: bool
     }
 
 module State =
     let empty =
         {
             User = None
+            IsPreLoginPage = false
         }
 
 let init () =
@@ -27,6 +30,12 @@ let init () =
 
 let update (msg: Msg) (state: State) =
     match msg with
+    | Msg.ToLoginStep ->
+        let state =
+            { state with
+                IsPreLoginPage = true
+            }
+        state, Cmd.none
     | Msg.Login ->
         let cmd =
             Msg.LoginResult User.mock
@@ -53,21 +62,13 @@ let welcomeUnregistered (dispatch: Msg -> unit) =
         ]
         prop.children [
             Html.div []
-            Html.h1 [
-                prop.classes [
-                    "text-3xl"
-                    "text-black"
-                    "text-opacity-70"
-                    "text-center"
-                ]
-                prop.children [
+            h1 [
                     Html.text "Выбор иконки для сервера"
                     Html.br []
                     Html.div [
                         prop.dangerouslySetInnerHTML "«Весёлый&nbsp;носок»"
                     ]
                 ]
-            ]
             Html.div [
                 prop.id "logo"
                 prop.children [
@@ -81,6 +82,36 @@ let welcomeUnregistered (dispatch: Msg -> unit) =
                 prop.className "w-[180px] h-[50px]"
                 prop.children (
                     button "Начать" (fun _ ->
+                        dispatch Msg.ToLoginStep
+                    )
+                )
+            ]
+            Html.div []
+        ]
+    ]
+
+let preLogin dispatch =
+    Html.div [
+        prop.classes [
+            "size-full"
+
+            "flex"
+            "flex-col"
+            "justify-between"
+            "items-center"
+        ]
+        prop.children [
+            Html.div []
+            h1 [
+                Html.text "Логин"
+            ]
+            p [
+                Html.text "Прежде чем приступить к выбору, нужно войти в приложение через Discord."
+            ]
+            Html.div [
+                prop.className "w-[180px] h-[50px]"
+                prop.children (
+                    button "Войти" (fun _ ->
                         dispatch Msg.Login
                     )
                 )
@@ -92,7 +123,10 @@ let welcomeUnregistered (dispatch: Msg -> unit) =
 let view (state: State) (dispatch: Msg -> unit) =
     match state.User with
     | None ->
-        welcomeUnregistered dispatch
+        if not state.IsPreLoginPage then
+            welcomeUnregistered dispatch
+        else
+            preLogin dispatch
     | Some user ->
         Html.div [
             Html.h1 [
