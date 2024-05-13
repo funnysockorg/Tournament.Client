@@ -120,6 +120,36 @@ let preLogin dispatch =
         ]
     ]
 
+let preTournament user dispatch =
+    Html.div [
+        prop.classes [
+            "size-full"
+
+            "flex"
+            "flex-col"
+            "justify-between"
+            "items-center"
+        ]
+        prop.children [
+            Html.div []
+            h1 [
+                Html.textf "Добро пожаловать, %s!" user.Nickname
+            ]
+            p [
+                Html.text "Теперь Вы готовы к выборам."
+            ]
+            Html.div [
+                prop.className "w-[180px] h-[50px]"
+                prop.children (
+                    button "Приступить!" (fun _ ->
+                        dispatch Msg.Start
+                    )
+                )
+            ]
+            Html.div []
+        ]
+    ]
+
 let view (state: State) (dispatch: Msg -> unit) =
     match state.User with
     | None ->
@@ -128,14 +158,4 @@ let view (state: State) (dispatch: Msg -> unit) =
         else
             preLogin dispatch
     | Some user ->
-        Html.div [
-            Html.h1 [
-                prop.textf "Welcome, %s!" user.Nickname
-            ]
-            Html.div [
-                Html.button [
-                    prop.onClick (fun _ -> dispatch Msg.Start)
-                    prop.text "Start tournament"
-                ]
-            ]
-        ]
+        preTournament user dispatch
