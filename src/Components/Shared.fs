@@ -202,3 +202,35 @@ let content (children: ReactElement list) =
             Html.div []
         ]
     ]
+
+let serverIcon isDarkMode (children: ReactElement list) =
+    Html.div [
+        prop.classes [
+            "size-[72px]"
+            if isDarkMode then
+                "bg-neutral-800"
+            else
+                "bg-zinc-200"
+
+            "flex"
+            "gap-2"
+            "items-center"
+        ]
+        prop.children [
+            Html.div [
+                prop.classes [
+                    "w-1"
+                    "h-10"
+                    if isDarkMode then
+                        "bg-white"
+                    else
+                        "bg-zinc-950"
+                    "rounded-r-2xl"
+                ]
+            ]
+            Html.div [
+                prop.className "size-12 bg-white rounded-2xl"
+                prop.children children
+            ]
+        ]
+    ]

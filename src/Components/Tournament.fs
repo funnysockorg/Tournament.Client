@@ -3,6 +3,7 @@ open Elmish
 open Feliz
 
 open Tournament.Client.Model
+open Tournament.Client.Components.Shared
 
 type State =
     {
@@ -48,18 +49,76 @@ let update (msg: Msg) (state: State) =
 let view (state: State) (dispatch: Msg -> unit) =
     match MergeSort.getCurrentCandidates state.SortState with
     | Some (x, y) ->
-        Html.div [
-            Html.h1 [
-                prop.text "Choice the best!"
+        let serverIconCandidate (name: string) onClick =
+            let serverIcon isDarkMode =
+                serverIcon isDarkMode [
+                    Html.div [
+                        prop.classes [
+                            "size-full"
+
+                            "flex"
+                            "justify-center"
+                            "items-center"
+                        ]
+                        prop.text name
+                    ]
+                ]
+            Html.button [
+                prop.classes [
+                    "size-[200px]"
+                    "bg-fuchsia-100"
+                    "rounded-[30px]"
+                    "hover:bg-fuchsia-200"
+
+                    "flex"
+                    "flex-col"
+                    "justify-between"
+                    "justify-center"
+                    "items-center"
+                ]
+                prop.children [
+                    Html.div []
+                    serverIcon true
+                    serverIcon false
+                    Html.div []
+                ]
+                prop.onClick onClick
+            ]
+
+        content [
+            Html.div [
+                prop.classes [ "relative" ]
+                prop.children [
+                    Html.img [
+                        prop.classes [
+                            "left-[-60px]"
+                            "bottom-[10px]"
+                            "absolute"
+                        ]
+                        prop.src "./images/first-arrow.svg"
+                    ]
+                    serverIconCandidate x.Name (fun _ ->
+                        dispatch (Msg.Choice MergeSort.Choice.Left)
+                    )
+                ]
+            ]
+            h1 [
+                Html.text "Выберите наилучшую!"
             ]
             Html.div [
-                Html.button [
-                    prop.onClick (fun _ -> dispatch (Msg.Choice MergeSort.Choice.Left))
-                    prop.textf "%s" x.Name
-                ]
-                Html.button [
-                    prop.onClick (fun _ -> dispatch (Msg.Choice MergeSort.Choice.Right))
-                    prop.textf "%s" y.Name
+                prop.classes [ "relative" ]
+                prop.children [
+                    Html.img [
+                        prop.classes [
+                            "right-[-50px]"
+                            "top-[-10px]"
+                            "absolute"
+                        ]
+                        prop.src "./images/second-arrow.svg"
+                    ]
+                    serverIconCandidate y.Name (fun _ ->
+                        dispatch (Msg.Choice MergeSort.Choice.Right)
+                    )
                 ]
             ]
         ]
