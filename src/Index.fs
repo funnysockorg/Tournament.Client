@@ -5,6 +5,8 @@ open Feliz
 open Tournament.Client.Model
 open Tournament.Client.Components
 
+open Tournament.Client.Components.Shared
+
 Fable.Core.JsInterop.import "" "./index.css"
 
 [<RequireQualifiedAccess>]
@@ -109,11 +111,54 @@ let update (msg: Msg) (state: State) =
             tournamentCmd |> Cmd.map Msg.TournamentResultHandle
         state, cmd
 
+let mainContainer (children: ReactElement list) =
+    Html.div [
+        prop.classes [
+            "h-screen"
+            "w-screen"
+            "flex"
+            "justify-center"
+        ]
+        prop.children (
+            Html.div [
+                prop.classes [ "max-w-[360px]"; "size-full" ]
+                prop.children (
+                    Html.div [
+                        prop.classes [
+                            "size-full"
+                            "flex"
+                            "flex-col"
+                        ]
+                        prop.children [
+                            Html.div [
+                                prop.className "bg-fuchsia-200"
+                                prop.children (
+                                    Html.div [
+                                        prop.className "h-10 m-1"
+                                        prop.children [
+                                            navbar [ navbarToggle ] [ navbarAvatar ]
+                                        ]
+                                    ]
+                                )
+                            ]
+                            Html.div [
+                                prop.className "grow"
+                                prop.children children
+                            ]
+                        ]
+                    ]
+                )
+            ]
+        )
+    ]
+
 let view (state: State) (dispatch: Msg -> unit) =
-    match state.Page with
-    | Page.Home homeState ->
-        Home.view homeState (Msg.HomeHandle >> dispatch)
-    | Page.Tournament tournamentState ->
-        Tournament.view tournamentState (Msg.TournamentHandle >> dispatch)
-    | Page.TournamentResult tournamentResultState ->
-        TournamentResult.view tournamentResultState (Msg.TournamentResultHandle >> dispatch)
+    mainContainer [
+        match state.Page with
+        | Page.Home homeState ->
+            Home.view homeState (Msg.HomeHandle >> dispatch)
+        | Page.Tournament tournamentState ->
+            Tournament.view tournamentState (Msg.TournamentHandle >> dispatch)
+        | Page.TournamentResult tournamentResultState ->
+            TournamentResult.view tournamentResultState (Msg.TournamentResultHandle >> dispatch)
+    ]
