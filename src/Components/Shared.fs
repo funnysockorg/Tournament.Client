@@ -185,3 +185,20 @@ let p (children: ReactElement list) =
         ]
         prop.children children
     ]
+
+let content (children: ReactElement list) =
+    Html.div [
+        prop.classes [
+            "size-full"
+
+            "flex"
+            "flex-col"
+            "justify-between"
+            "items-center"
+        ]
+        prop.children [
+            Html.div []
+            yield! children
+            Html.div []
+        ]
+    ]
