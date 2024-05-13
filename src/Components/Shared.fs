@@ -146,14 +146,11 @@ let navbar (leftItems: ReactElement seq) (rightItems: ReactElement seq) =
     ]
 
 let button (text: string) onClick =
-    Html.div [
-        prop.id "button"
+    Html.button [
         prop.classes [
             "bg-pink-300"
             "rounded-full"
             "size-full"
-            "cursor-pointer"
-            "select-none"
 
             "text-2xl"
             "flex"
