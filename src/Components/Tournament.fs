@@ -52,16 +52,7 @@ let view (state: State) (dispatch: Msg -> unit) =
         let serverIconCandidate (name: string) onClick =
             let serverIcon isDarkMode =
                 serverIcon isDarkMode [
-                    Html.div [
-                        prop.classes [
-                            "size-full"
-
-                            "flex"
-                            "justify-center"
-                            "items-center"
-                        ]
-                        prop.text name
-                    ]
+                    Html.text name
                 ]
             Html.button [
                 prop.classes [

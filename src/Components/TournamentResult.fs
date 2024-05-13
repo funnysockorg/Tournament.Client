@@ -3,6 +3,7 @@ open Elmish
 open Feliz
 
 open Tournament.Client.Model
+open Tournament.Client.Components.Shared
 
 type State =
     {
@@ -28,17 +29,17 @@ let update (msg: Msg) (state: State) =
         state, Cmd.none
 
 let view (state: State) (dispatch: Msg -> unit) =
-    Html.div [
-        Html.ul (
-            state.Participants
-            |> List.map (fun partipant ->
-                Html.li [
-                    prop.text partipant.Name
-                ]
+    content [
+        h1 [
+            Html.text "Итоги Вашего выбора"
+        ]
+        serverIconItems state.Participants
+        Html.div [
+            prop.className "w-[180px] h-[50px]"
+            prop.children (
+                button "Submit" (fun _ ->
+                    dispatch Msg.Submit
+                )
             )
-        )
-        Html.button [
-            prop.onClick (fun _ -> dispatch Msg.Submit)
-            prop.text "Submit"
         ]
     ]

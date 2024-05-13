@@ -2,6 +2,8 @@ module Tournament.Client.Components.Shared
 open Elmish
 open Feliz
 
+open Tournament.Client.Model
+
 let document = Browser.Dom.document
 
 [<ReactComponent>]
@@ -192,6 +194,7 @@ let content (children: ReactElement list) =
             "flex-col"
             "justify-between"
             "items-center"
+            "gap-4"
         ]
         prop.children [
             Html.div []
@@ -227,7 +230,74 @@ let serverIcon isDarkMode (children: ReactElement list) =
             ]
             Html.div [
                 prop.className "size-12 bg-white rounded-2xl"
-                prop.children children
+                prop.children [
+                    Html.div [
+                        prop.classes [
+                            "size-full"
+
+                            "flex"
+                            "justify-center"
+                            "items-center"
+                        ]
+                        prop.children children
+                    ]
+                ]
             ]
         ]
+    ]
+
+let serverIconItems (participants: Participant list) =
+    let serverIconItem i (name: string) =
+        let serverIcon isDarkMode =
+            serverIcon isDarkMode [
+                Html.text name
+            ]
+        Html.li [
+            prop.classes [
+                "hover:bg-fuchsia-100"
+
+                "flex"
+                "justify-between"
+                "justify-center"
+                "items-center"
+            ]
+            prop.children [
+                Html.div []
+                Html.div [
+                    prop.classes [
+                        match i with
+                        | 0 ->
+                            "bg-yellow-200"
+                        | 1 ->
+                            "bg-gray-200"
+                        | 2 ->
+                            "bg-orange-200"
+                        | _ ->
+                            ""
+                        "size-8"
+                        "rounded-full"
+
+                        "flex"
+                        "justify-center"
+                        "items-center"
+                    ]
+                    prop.textf "%d" (i + 1)
+                ]
+                serverIcon true
+                serverIcon false
+                Html.div []
+            ]
+        ]
+    Html.ol [
+        prop.classes [
+            "overflow-auto"
+            "min-h-0"
+            "w-full"
+        ]
+        prop.children (
+            participants
+            |> List.mapi (fun i partipant ->
+                serverIconItem i partipant.Name
+            )
+        )
     ]

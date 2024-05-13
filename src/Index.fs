@@ -111,6 +111,35 @@ let update (msg: Msg) (state: State) =
             tournamentCmd |> Cmd.map Msg.TournamentResultHandle
         state, cmd
 
+let container (children: ReactElement list) =
+    Html.div [
+        prop.classes [
+            "size-full"
+            "flex"
+            "flex-col"
+        ]
+        prop.children [
+            Html.div [
+                prop.className "bg-fuchsia-200"
+                prop.children (
+                    Html.div [
+                        prop.className "h-10 m-1"
+                        prop.children [
+                            navbar [ navbarToggle ] [ navbarAvatar ]
+                        ]
+                    ]
+                )
+            ]
+            Html.div [
+                prop.classes [
+                    "grow"
+                    "overflow-auto"
+                ]
+                prop.children children
+            ]
+        ]
+    ]
+
 let mainContainer (children: ReactElement list) =
     Html.div [
         prop.classes [
@@ -123,30 +152,7 @@ let mainContainer (children: ReactElement list) =
             Html.div [
                 prop.classes [ "max-w-[360px]"; "size-full" ]
                 prop.children (
-                    Html.div [
-                        prop.classes [
-                            "size-full"
-                            "flex"
-                            "flex-col"
-                        ]
-                        prop.children [
-                            Html.div [
-                                prop.className "bg-fuchsia-200"
-                                prop.children (
-                                    Html.div [
-                                        prop.className "h-10 m-1"
-                                        prop.children [
-                                            navbar [ navbarToggle ] [ navbarAvatar ]
-                                        ]
-                                    ]
-                                )
-                            ]
-                            Html.div [
-                                prop.className "grow"
-                                prop.children children
-                            ]
-                        ]
-                    ]
+                    container children
                 )
             ]
         )
