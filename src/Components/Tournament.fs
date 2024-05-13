@@ -39,7 +39,7 @@ let update (msg: Msg) (state: State) =
         let cmd =
             match MergeSort.getResult sortState with
             | Some result ->
-                Cmd.ofMsg (Msg.Result result)
+                Cmd.ofMsg (Msg.Result (List.rev result))
             | None ->
                 Cmd.none
         state, cmd
