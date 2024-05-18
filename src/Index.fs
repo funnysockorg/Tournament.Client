@@ -1,6 +1,7 @@
 module Index
 open Elmish
 open Feliz
+open Feliz.Router
 
 open Tournament.Client.Model
 open Tournament.Client.Components
@@ -33,9 +34,36 @@ type Msg =
     | StartTournament
     | StartTournamentResult of Participant list
     | TournamentResultHandle of TournamentResult.Msg
+    | ChangeUrl of string list
+
+let parseUrl segments (state: State) =
+    match segments with
+    | "auth"::"callback"::query ->
+        match query with
+        | Route.Query(queryParams)::_ ->
+            let homeMsg =
+                Home.LoginResult.ofQueryParameters queryParams
+                |> Home.Msg.SetLoginResult
+            let homeState =
+                match state.Page with
+                | Page.Home home ->
+                    home
+                | _ ->
+                    Home.State.empty
+            let state =
+                { state with
+                    Page =
+                        Page.Home homeState
+                }
+            state, Cmd.ofMsg (Msg.HomeHandle homeMsg)
+        | _ ->
+            state, Cmd.none
+    | _ ->
+        state, Cmd.none
 
 let init () =
-    State.empty, Cmd.none
+    let segments = Router.currentUrl()
+    parseUrl segments State.empty
 
 let update (msg: Msg) (state: State) =
     match msg with
@@ -110,6 +138,8 @@ let update (msg: Msg) (state: State) =
         let cmd =
             tournamentCmd |> Cmd.map Msg.TournamentResultHandle
         state, cmd
+    | Msg.ChangeUrl segments ->
+        parseUrl segments state
 
 let container (children: ReactElement list) =
     Html.div [
@@ -159,12 +189,17 @@ let mainContainer (children: ReactElement list) =
     ]
 
 let view (state: State) (dispatch: Msg -> unit) =
-    mainContainer [
-        match state.Page with
-        | Page.Home homeState ->
-            Home.view homeState (Msg.HomeHandle >> dispatch)
-        | Page.Tournament tournamentState ->
-            Tournament.view tournamentState (Msg.TournamentHandle >> dispatch)
-        | Page.TournamentResult tournamentResultState ->
-            TournamentResult.view tournamentResultState (Msg.TournamentResultHandle >> dispatch)
+    React.router [
+        router.onUrlChanged (Msg.ChangeUrl >> dispatch)
+        router.children (
+            mainContainer [
+                match state.Page with
+                | Page.Home homeState ->
+                    Home.view homeState (Msg.HomeHandle >> dispatch)
+                | Page.Tournament tournamentState ->
+                    Tournament.view tournamentState (Msg.TournamentHandle >> dispatch)
+                | Page.TournamentResult tournamentResultState ->
+                    TournamentResult.view tournamentResultState (Msg.TournamentResultHandle >> dispatch)
+            ]
+        )
     ]
