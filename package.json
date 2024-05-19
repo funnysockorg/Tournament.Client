@@ -3,11 +3,13 @@
   "scripts": {
     "vite:watch": "vite",
     "vite:build": "vite build",
-    "tests:vite:watch": "npm run vite:watch -- --config vite.tests.config.js"
+    "tests:vite:watch": "npm run vite:watch -- --config vite.tests.config.js",
+    "gh-pages": "gh-pages -d deploy"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
     "concurrently": "^8.0.1",
+    "gh-pages": "^6.1.1",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "vite": "^4.5.2"
