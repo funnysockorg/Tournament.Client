@@ -1,6 +1,5 @@
 module Tournament.Client.Api
 open Fable.Core
-open Fable.Core.JS
 
 open Tournament.Client.Model
 
@@ -22,9 +21,37 @@ let discordSignInUrl =
         |> String.concat "&"
     sprintf "https://discord.com/oauth2/authorize?%s" query
 
-let getCurrentUser () : Promise<User> =
-    Constructors.Promise.Create(fun result reject ->
-        setTimeout
+module AuthCallback =
+    open Fetch.Types
+
+    type DiscordAuthCode = string
+    type ApiAuthToken = string
+    type StatusCode = int
+
+    type Response =
+        Result<ApiAuthToken, {| StatusCode: StatusCode; Body: string |}>
+
+    let request (code: DiscordAuthCode) : JS.Promise<Response> =
+        promise {
+            let! result =
+                Fetch.fetchUnsafe (sprintf "%s/discord/auth/callback?code=%s" apiHost code) [
+                    Method HttpMethod.GET
+                ]
+            match result.Status with
+            | 200 ->
+                let! body = result.text()
+                return Ok body
+            | statusCode ->
+                let! body = result.text()
+                return Error {|
+                    StatusCode = statusCode
+                    Body = body
+                |}
+        }
+
+let getCurrentUser authToken : JS.Promise<User> =
+    JS.Constructors.Promise.Create(fun result reject ->
+        JS.setTimeout
             (fun () ->
                 result User.mock
             )

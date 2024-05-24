@@ -301,3 +301,8 @@ let serverIconItems (participants: Participant list) =
             )
         )
     ]
+
+let spinner =
+    Html.div [
+        prop.text "Загрузка..."
+    ]

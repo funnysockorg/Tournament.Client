@@ -42,8 +42,8 @@ let parseUrl segments (state: State) =
         match query with
         | Route.Query(queryParams)::_ ->
             let homeMsg =
-                Home.LoginResult.ofQueryParameters queryParams
-                |> Home.Msg.SetLoginResult
+                Home.AuthCallbackParams.ofQueryParameters queryParams
+                |> Home.Msg.StartAuthCodeExchange
             let homeState =
                 match state.Page with
                 | Page.Home home ->

@@ -9,6 +9,7 @@ group Main
     nuget Fable.Elmish.HMR
     nuget Feliz
     nuget Feliz.Router
+    nuget Fable.Fetch
 
     source https://gitlab.com/api/v4/projects/28574921/packages/nuget/index.json
     nuget FSharpMyExt >= 2.0.0-prerelease.8 lowest_matching: true
