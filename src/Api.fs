@@ -1,5 +1,6 @@
 module Tournament.Client.Api
 open Fable.Core
+open Fetch.Types
 
 open Tournament.Client.Model
 
@@ -21,15 +22,19 @@ let discordSignInUrl =
         |> String.concat "&"
     sprintf "https://discord.com/oauth2/authorize?%s" query
 
-module AuthCallback =
-    open Fetch.Types
+type ApiAuthToken = string
+type StatusCode = int
+type FetchError =
+    {
+        StatusCode: StatusCode
+        Body: string
+    }
 
+module AuthCallback =
     type DiscordAuthCode = string
-    type ApiAuthToken = string
-    type StatusCode = int
 
     type Response =
-        Result<ApiAuthToken, {| StatusCode: StatusCode; Body: string |}>
+        Result<ApiAuthToken, FetchError>
 
     let request (code: DiscordAuthCode) : JS.Promise<Response> =
         promise {
@@ -43,18 +48,38 @@ module AuthCallback =
                 return Ok body
             | statusCode ->
                 let! body = result.text()
-                return Error {|
+                return Error {
                     StatusCode = statusCode
                     Body = body
-                |}
+                }
         }
 
-let getCurrentUser authToken : JS.Promise<User> =
-    JS.Constructors.Promise.Create(fun result reject ->
-        JS.setTimeout
-            (fun () ->
-                result User.mock
-            )
-            1500
-        |> ignore
-    )
+[<RequireQualifiedAccess>]
+type ResponseError =
+    | ParseError of string
+    | FetchError of FetchError
+
+let getCurrentUser (authToken: ApiAuthToken) : JS.Promise<_> =
+    promise {
+        let! result =
+            Fetch.fetchUnsafe (sprintf "%s/discord/get-user-data" apiHost) [
+                Method HttpMethod.GET
+                Fetch.requestHeaders  [
+                    Authorization authToken
+                ]
+            ]
+        match result.Status with
+        | 200 ->
+            let! body = result.text()
+            return
+                User.decode body
+                |> Result.mapError ResponseError.ParseError
+        | statusCode ->
+            let! body = result.text()
+            return
+                ResponseError.FetchError {
+                    StatusCode = statusCode
+                    Body = body
+                }
+                |> Error
+    }

@@ -34,12 +34,12 @@ module AuthCodeExchange =
     [<RequireQualifiedAccess>]
     type Msg =
         | Exchange
-        | SetResult of Result<Api.AuthCallback.ApiAuthToken, string>
+        | SetResult of Result<Api.ApiAuthToken, string>
 
     type State =
         {
             Code: AuthCallback
-            Result: Deferred<Result<Api.AuthCallback.ApiAuthToken, string>>
+            Result: Deferred<Result<Api.ApiAuthToken, string>>
         }
     module State =
         let create code =
@@ -119,7 +119,7 @@ module GettingUser =
 
     type State =
         {
-            AuthToken: Api.AuthCallback.ApiAuthToken
+            AuthToken: Api.ApiAuthToken
             Result: Deferred<Result<User, string>>
         }
     module State =
@@ -147,8 +147,10 @@ module GettingUser =
                     Ok
                     (sprintf "%A" >> Error)
                 |> Cmd.map (
-                    Result.mapError (fun err ->
-                        Fable.Core.JS.JSON.stringify err
+                    Result.bind (
+                        Result.mapError (fun err ->
+                            Fable.Core.JS.JSON.stringify err
+                        )
                     )
                     >> Msg.SetResult
                 )
