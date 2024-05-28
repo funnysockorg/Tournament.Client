@@ -229,28 +229,55 @@ let serverIcon isDarkMode (children: ReactElement list) =
                 ]
             ]
             Html.div [
-                prop.className "size-12 bg-white rounded-2xl"
-                prop.children [
-                    Html.div [
-                        prop.classes [
-                            "size-full"
-
-                            "flex"
-                            "justify-center"
-                            "items-center"
-                        ]
-                        prop.children children
-                    ]
-                ]
+                prop.className "size-12 bg-white rounded-2xl overflow-hidden"
+                prop.children (
+                    children
+                )
             ]
         ]
     ]
 
+let participantIcon (participant: Participant) =
+    let nameView (name: string) =
+        Html.div [
+            prop.classes [
+                "size-full"
+
+                "flex"
+                "justify-center"
+                "items-center"
+            ]
+            prop.children (
+                Html.text name
+            )
+        ]
+
+    let avatarView (avatar: ParticipantAvatar) =
+        Html.img [
+            prop.classes [
+                "max-w-none"
+            ]
+            prop.style [
+                style.transformOrigin (origin.left, origin.top)
+                style.transform [
+                    transform.translate(avatar.X, avatar.Y)
+                    transform.scale(avatar.Scale)
+                ]
+            ]
+            prop.src avatar.Src
+        ]
+
+    match participant.Avatar with
+    | Some avatar ->
+        avatarView avatar
+    | None ->
+        nameView participant.Name
+
 let serverIconItems (participants: Participant list) =
-    let serverIconItem i (name: string) =
+    let serverIconItem i (participant: Participant) =
         let serverIcon isDarkMode =
             serverIcon isDarkMode [
-                Html.text name
+                participantIcon participant
             ]
         Html.li [
             prop.classes [
@@ -297,7 +324,7 @@ let serverIconItems (participants: Participant list) =
         prop.children (
             participants
             |> List.mapi (fun i partipant ->
-                serverIconItem i partipant.Name
+                serverIconItem i partipant
             )
         )
     ]

@@ -49,10 +49,10 @@ let update (msg: Msg) (state: State) =
 let view (state: State) (dispatch: Msg -> unit) =
     match MergeSort.getCurrentCandidates state.SortState with
     | Some (x, y) ->
-        let serverIconCandidate (name: string) onClick =
+        let serverIconCandidate (participant: Participant) onClick =
             let serverIcon isDarkMode =
                 serverIcon isDarkMode [
-                    Html.text name
+                    participantIcon participant
                 ]
             Html.button [
                 prop.classes [
@@ -88,7 +88,7 @@ let view (state: State) (dispatch: Msg -> unit) =
                         ]
                         prop.src "./images/first-arrow.svg"
                     ]
-                    serverIconCandidate x.Name (fun _ ->
+                    serverIconCandidate x (fun _ ->
                         dispatch (Msg.Choice MergeSort.Choice.Left)
                     )
                 ]
@@ -107,7 +107,7 @@ let view (state: State) (dispatch: Msg -> unit) =
                         ]
                         prop.src "./images/second-arrow.svg"
                     ]
-                    serverIconCandidate y.Name (fun _ ->
+                    serverIconCandidate y (fun _ ->
                         dispatch (Msg.Choice MergeSort.Choice.Right)
                     )
                 ]
